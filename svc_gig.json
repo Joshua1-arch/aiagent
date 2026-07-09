@@ -1,0 +1,7 @@
+[
+  {
+    "serviceName": "Freelance Invoicing",
+    "serviceDescription": "Summary: AI invoicing and outreach assistant for freelancers that drafts pitches, generates payment links, and monitors payment status on-chain.\nInput requirements: 1. outreach details or client name 2. payment amount 3. freelancer wallet address",
+    "serviceType": "A2A"
+  }
+]

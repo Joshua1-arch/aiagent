@@ -1,0 +1,10 @@
+{
+  "name": "okx-agents-heartbeat",
+  "version": "1.0.0",
+  "description": "Background heartbeat script for OKX.AI agents",
+  "main": "keep_agents_online.js",
+  "scripts": {
+    "start": "node keep_agents_online.js"
+  },
+  "dependencies": {}
+}

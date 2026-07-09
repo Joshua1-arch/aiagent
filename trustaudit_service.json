@@ -1,0 +1,1 @@
+[{"serviceName":"Contract Risk Scan","serviceDescription":"Summary: Scan a smart contract address on supported chains for honeypot risks, tax structures, LP lock status, and ownership backdoors.\nInput requirements: 1. smart contract address, 2. chain name.","serviceType":"A2MCP","fee":"0.1","endpoint":"https://trustaudit-tau.vercel.app/scan"}]

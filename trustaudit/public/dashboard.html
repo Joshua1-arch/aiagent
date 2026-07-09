@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustAudit — Smart Contract Risk Scanner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #070913;
+      --surface: rgba(13, 17, 34, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.4);
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.4);
+      
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Radial Mesh Background */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+      top: -200px;
+      right: -200px;
+      z-index: -1;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      bottom: -200px;
+      left: -200px;
+      z-index: -1;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Header styling */
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+    }
+
+    h1 {
+      font-size: 38px;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #93c5fd, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Scanner Form Card */
+    .scanner-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .form-group {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .form-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 16px 20px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 16px 25px 16px 20px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      cursor: pointer;
+      min-width: 150px;
+      transition: all 0.3s ease;
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+      background-repeat: no-repeat;
+      background-position-x: calc(100% - 10px);
+      background-position-y: 50%;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: #fff;
+      border: none;
+      padding: 16px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+      background: linear-gradient(135deg, #9061f9, #8b5cf6);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* Loader */
+    .loader-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+      gap: 15px;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      border-right-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Results Dashboard Grid */
+    .results-container {
+      display: none;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid-dashboard {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 25px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 10px;
+    }
+
+    /* Score Gauge */
+    .gauge-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 200px;
+    }
+
+    .score-circle {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(var(--score-color, var(--success)) calc(var(--score-val, 0) * 1%), rgba(255,255,255,0.05) 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .score-circle::after {
+      content: "";
+      position: absolute;
+      width: 116px;
+      height: 116px;
+      border-radius: 50%;
+      background: var(--bg);
+    }
+
+    .score-inner {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+
+    .score-num {
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .score-lbl {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .verdict-tag {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .verdict-safe { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+    .verdict-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .verdict-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+
+    /* Details Grid */
+    .details-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    /* Narrative Card */
+    .narrative-card {
+      margin-bottom: 25px;
+    }
+
+    .narrative-content {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #d1d5db;
+    }
+
+    /* Flags list */
+    .flag-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .flag-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .flag-high { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .flag-medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .flag-low { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; }
+
+    .flag-text {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .flag-title {
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .flag-desc {
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <span class="logo-badge">🛡️ AI Core</span>
+      </div>
+      <h1>TrustAudit</h1>
+      <p class="subtitle">On-chain Smart Contract Security Analysis and Risk Detection Engine</p>
+    </header>
+
+    <div class="scanner-card">
+      <div class="form-group">
+        <div class="input-wrapper">
+          <input type="text" id="contractAddress" placeholder="Paste Smart Contract Address (0x...)" value="0xdac17f958d2ee523a2206206994597c13d831ec7">
+        </div>
+        <select id="chainSelect">
+          <option value="ethereum">Ethereum</option>
+          <option value="base">Base</option>
+          <option value="bsc">BSC (BNB)</option>
+          <option value="polygon">Polygon</option>
+          <option value="arbitrum">Arbitrum</option>
+        </select>
+        <button id="scanButton" onclick="startScan()">
+          <span>Scan Contract</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader-container" id="scannerLoader">
+      <div class="spinner"></div>
+      <div class="loader-text" id="loaderText">Running security analysis...</div>
+    </div>
+
+    <!-- Results Dashboard -->
+    <div class="results-container" id="resultsDashboard">
+      
+      <!-- Narrative verdict -->
+      <div class="panel-card narrative-card">
+        <div class="panel-title">🛡️ AI Security Verdict</div>
+        <div class="narrative-content" id="verdictSummary">
+          Generating summary...
+        </div>
+      </div>
+
+      <div class="grid-dashboard">
+        
+        <!-- Left panel: Risk Score Circle -->
+        <div class="panel-card">
+          <div class="panel-title" style="text-align: center;">Risk Score</div>
+          <div class="gauge-wrapper">
+            <div class="score-circle" id="scoreCircle">
+              <div class="score-inner">
+                <div class="score-num" id="scoreNum">0</div>
+                <div class="score-lbl">Score</div>
+              </div>
+            </div>
+            <div style="margin-top: 10px;">
+              <span class="verdict-tag" id="verdictTag">Calculating</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right panel: Details List -->
+        <div class="panel-card">
+          <div class="panel-title">Asset Indicators</div>
+          <div class="details-list">
+            <div class="detail-item">
+              <span class="detail-label">Token Name</span>
+              <span class="detail-value" id="tokenName">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">GoPlus Verified</span>
+              <span class="detail-value" id="goplusVerified">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Buy Tax / Sell Tax</span>
+              <span class="detail-value" id="taxRate">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Liquidity Locked</span>
+              <span class="detail-value" id="liquidityLocked">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Top 10 Holder %</span>
+              <span class="detail-value" id="topHolders">-</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total Holders</span>
+              <span class="detail-value" id="totalHolders">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Panel: Risk Flags list -->
+      <div class="panel-card" style="margin-top: 25px;">
+        <div class="panel-title" id="flagsHeader">Vulnerabilities & Risk Flags (0)</div>
+        <div id="flagsList">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      TRUSTAUDIT © 2026 • POWERED BY OKX ONCHAIN OS
+    </footer>
+  </div>
+
+  <script>
+    async function startScan() {
+      const address = document.getElementById('contractAddress').value.trim();
+      const chain = document.getElementById('chainSelect').value;
+      const scanButton = document.getElementById('scanButton');
+      const loader = document.getElementById('scannerLoader');
+      const results = document.getElementById('resultsDashboard');
+
+      if (!address || !address.startsWith('0x')) {
+        alert('Please enter a valid EVM contract address starting with 0x.');
+        return;
+      }
+
+      // Show loader
+      scanButton.disabled = true;
+      loader.style.display = 'flex';
+      results.style.display = 'none';
+
+      const statuses = [
+        'Querying GoPlus Security APIs...',
+        'Checking honeypots and trading taxes...',
+        'Parsing liquidity locks and holder distributions...',
+        'Generating AI-powered narrative report...'
+      ];
+
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (progress < statuses.length - 1) {
+          progress++;
+          document.getElementById('loaderText').innerText = statuses[progress];
+        }
+      }, 1000);
+
+      try {
+        const response = await fetch('/scan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ address, chain })
+        });
+
+        const data = await response.json();
+        clearInterval(interval);
+
+        if (!data || data.ok === false) {
+          alert('Scan failed: ' + (data.error || 'Unknown error'));
+          loader.style.display = 'none';
+          scanButton.disabled = false;
+          return;
+        }
+
+        renderResults(data);
+      } catch (err) {
+        clearInterval(interval);
+        alert('Scan request failed: ' + err.message);
+        loader.style.display = 'none';
+        scanButton.disabled = false;
+      }
+    }
+
+    function renderResults(report) {
+      const results = document.getElementById('resultsDashboard');
+      const loader = document.getElementById('scannerLoader');
+      const scanButton = document.getElementById('scanButton');
+
+      // Update basic fields
+      document.getElementById('tokenName').innerText = `${report.token.name} (${report.token.symbol})`;
+      document.getElementById('goplusVerified').innerText = report.token.isTrusted ? '🟢 Whitelisted' : '⚪ Not Whitelisted';
+      document.getElementById('taxRate').innerText = `${(report.details.tax.buy * 100).toFixed(1)}% / ${(report.details.tax.sell * 100).toFixed(1)}%`;
+      document.getElementById('liquidityLocked').innerText = report.details.liquidity.isLocked ? `🟢 Locked (${(report.details.liquidity.lockedPercent * 100).toFixed(1)}%)` : '🔴 Unlocked';
+      document.getElementById('topHolders').innerText = report.details.holders?.top10Percent ? `${(report.details.holders.top10Percent * 100).toFixed(1)}%` : 'Unknown';
+      document.getElementById('totalHolders').innerText = report.details.holders?.totalHolders ? Number(report.details.holders.totalHolders).toLocaleString() : 'Unknown';
+
+      // Update AI narrative
+      document.getElementById('verdictSummary').innerHTML = `
+        <p style="font-size: 16px; margin-bottom: 12px; font-weight: 500;">${report.summary || 'No summary available.'}</p>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12px; color: #9ca3af; text-transform: uppercase; font-weight: 600;">Recommendation:</span>
+          <span style="font-size: 14px; font-weight: 700; color: #fff;">${report.verdict || 'No verdict available.'}</span>
+        </div>
+      `;
+
+      // Update Risk Score
+      const score = report.riskScore;
+      document.getElementById('scoreNum').innerText = score;
+      
+      const scoreCircle = document.getElementById('scoreCircle');
+      scoreCircle.style.setProperty('--score-val', score);
+
+      let scoreColor = 'var(--success)';
+      let verdictClass = 'verdict-safe';
+      let verdictText = 'Low Risk';
+
+      if (score >= 70) {
+        scoreColor = 'var(--danger)';
+        verdictClass = 'verdict-danger';
+        verdictText = 'Critical Risk';
+      } else if (score >= 35) {
+        scoreColor = 'var(--warning)';
+        verdictClass = 'verdict-warning';
+        verdictText = 'Medium Risk';
+      }
+
+      scoreCircle.style.setProperty('--score-color', scoreColor);
+      const tag = document.getElementById('verdictTag');
+      tag.className = `verdict-tag ${verdictClass}`;
+      tag.innerText = verdictText;
+
+      // Update Flags list
+      const flagsList = document.getElementById('flagsList');
+      flagsList.innerHTML = '';
+      const flags = report.flags || [];
+      document.getElementById('flagsHeader').innerText = `Vulnerabilities & Risk Flags (${flags.length})`;
+
+      if (flags.length === 0) {
+        flagsList.innerHTML = `
+          <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+            🟢 No security issues or risk indicators detected for this token contract.
+          </div>
+        `;
+      } else {
+        flags.forEach(flag => {
+          let badgeClass = 'flag-low';
+          if (flag.severity === 'high') badgeClass = 'flag-high';
+          if (flag.severity === 'medium') badgeClass = 'flag-medium';
+
+          const row = document.createElement('div');
+          row.className = 'flag-row';
+          row.innerHTML = `
+            <span class="flag-badge ${badgeClass}">${flag.severity}</span>
+            <div class="flag-text">
+              <div class="flag-title">${flag.flag}</div>
+              <div class="flag-desc">${flag.description}</div>
+            </div>
+          `;
+          flagsList.appendChild(row);
+        });
+      }
+
+      // Hide loader and show dashboard
+      loader.style.display = 'none';
+      results.style.display = 'block';
+      scanButton.disabled = false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+[
+  {
+    "serviceName": "Crypto Payroll",
+    "serviceDescription": "Summary: On-chain payroll agent that automates recurring crypto salary payments, schedules, and receipt generation for remote teams.\nInput requirements: 1. payee wallet address 2. payment amount and token 3. release schedule",
+    "serviceType": "A2A"
+  }
+]
