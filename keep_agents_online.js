@@ -1,11 +1,12 @@
 // keep_agents_online.js
 // Cloud-ready agent heartbeat script for Render/Railway deployments.
-// Automatically bootstraps the session and runs the A2A daemon in the foreground.
+// Automatically bootstraps the session, runs the A2A daemon, and starts an HTTP server for Render's Free Web Service tier.
 
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const http = require('http');
 
 // Step 1: Bootstrap the OnchainOS session in the container
 const homeDir = os.homedir();
@@ -27,7 +28,17 @@ if (process.env.SESSION_JSON_CONTENT && process.env.WALLETS_JSON_CONTENT) {
     console.log('Running with existing local config (if any).');
 }
 
-// Step 2: Start the A2A Daemon in the foreground (Self-Healing Process)
+// Step 2: Start a simple HTTP server to satisfy Render Web Service port check
+const PORT = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OKX Agent Daemon is running.');
+});
+server.listen(PORT, () => {
+    console.log(`\n✅ Web server listening on port ${PORT} (Render Free Tier check bypassed).`);
+});
+
+// Step 3: Start the A2A Daemon in the foreground (Self-Healing Process)
 console.log('\n=== Starting A2A Daemon in Foreground ===');
 
 function startDaemon() {
