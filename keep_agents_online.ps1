@@ -1,11 +1,5 @@
-# keep_agents_online.ps1
-# Sends periodic heartbeats for GigAgent (#3274) and PaySlip (#3272)
-# to keep them showing as "online" on OKX.AI.
-# Run this in a terminal before submitting listing applications.
-# It will loop indefinitely — Ctrl+C to stop.
-
 param(
-    [int]$IntervalSeconds = 240  # Send heartbeat every 4 minutes
+    [int]$IntervalSeconds = 240
 )
 
 $agents = @(
@@ -15,11 +9,7 @@ $agents = @(
 )
 
 Write-Host "=== OKX.AI Agent Heartbeat Keeper ===" -ForegroundColor Cyan
-Write-Host "Sending heartbeats every $IntervalSeconds seconds for:"
-foreach ($a in $agents) {
-    Write-Host "  • $($a.Name)" -ForegroundColor Green
-}
-Write-Host "Press Ctrl+C to stop.`n"
+Write-Host "Sending heartbeats every $IntervalSeconds seconds..."
 
 while ($true) {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -33,13 +23,12 @@ while ($true) {
                 Write-Host "  ✅ $($agent.Name) — online" -ForegroundColor Green
             } else {
                 Write-Host "  ⚠️  $($agent.Name) — heartbeat returned unexpected response" -ForegroundColor Yellow
-                Write-Host "     $result"
             }
         } catch {
             Write-Host "  ❌ $($agent.Name) — error: $_" -ForegroundColor Red
         }
     }
 
-    Write-Host "Next heartbeat in $IntervalSeconds seconds...`n"
+    Write-Host "Next heartbeat in $IntervalSeconds seconds..."
     Start-Sleep -Seconds $IntervalSeconds
 }
