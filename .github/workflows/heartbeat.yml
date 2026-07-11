@@ -1,0 +1,44 @@
+name: Agent Heartbeat Keeper
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bootstrap OnchainOS
+        run: |
+          mkdir ~/.onchainos
+          echo '${{ secrets.SESSION_JSON_CONTENT }}' > ~/.onchainos/session.json
+          echo '${{ secrets.WALLETS_JSON_CONTENT }}' > ~/.onchainos/wallets.json
+        shell: bash
+
+      - name: Setup PATH for OnchainOS
+        run: |
+          mkdir -p ~/.local/bin
+          cp .bin/onchainos.exe ~/.local/bin/
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Install a2a-node
+        run: npm install -g @okxweb3/a2a-node@latest
+
+      - name: Run A2A Daemon
+        run: |
+          $startTime = Get-Date
+          while ((Get-Date) -lt $startTime.AddHours(5).AddMinutes(45)) {
+              Write-Host "Starting a2a-node run..."
+              npx @okxweb3/a2a-node run
+              Write-Host "a2a-node exited. Restarting in 10s..."
+              Start-Sleep -Seconds 10
+          }
+        shell: powershell
