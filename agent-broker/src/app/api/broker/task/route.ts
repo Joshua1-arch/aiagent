@@ -8,7 +8,10 @@ import {
   BUYER_AGENT_ID,
 } from '@/lib/onchainos';
 
-// ── Persistent task store (per-process; production → use DB) ──
+import fs from 'fs';
+import path from 'path';
+
+// ── Persistent task store (using local JSON file for hackathon demo) ──
 interface StoredTask {
   jobId: string;
   platformJobId: string | null;   // the real on-chain job ID after publish
@@ -27,7 +30,29 @@ interface StoredTask {
   error?: string;
 }
 
+const dbPath = path.join(process.cwd(), 'tasks_db.json');
 const taskStore = new Map<string, StoredTask>();
+
+try {
+  if (fs.existsSync(dbPath)) {
+    const data = fs.readFileSync(dbPath, 'utf8');
+    const parsed = JSON.parse(data);
+    for (const [k, v] of Object.entries(parsed)) {
+      taskStore.set(k, v as StoredTask);
+    }
+  }
+} catch (err) {
+  console.error('Failed to load tasks_db.json', err);
+}
+
+function saveTask(id: string, task: StoredTask) {
+  taskStore.set(id, task);
+  try {
+    fs.writeFileSync(dbPath, JSON.stringify(Object.fromEntries(taskStore), null, 2), 'utf8');
+  } catch (err) {
+    console.error('Failed to save tasks_db.json', err);
+  }
+}
 
 // ── POST — create a real task ──────────────────────────────
 export async function POST(req: Request) {
@@ -72,7 +97,7 @@ export async function POST(req: Request) {
         { time: now, event: `📤 Creating task for ${agentName}…`, status: 'publishing' },
       ],
     };
-    taskStore.set(localId, task);
+    saveTask(localId, task);
 
     // Run the real task creation asynchronously so we don't block the HTTP response
     runRealTaskCreation(localId, {
@@ -135,7 +160,7 @@ export async function PATCH(req: Request) {
       pushEvent(task, 'complete', '✅ Payment released. Task confirmed complete.');
       task.status = 'complete';
       task.updatedAt = new Date().toISOString();
-      taskStore.set(jobId, task);
+      saveTask(jobId, task);
     }
 
     return NextResponse.json({ ok: success });
@@ -175,7 +200,7 @@ async function runRealTaskCreation(
     if (!created.published) {
       pushEvent(task, 'failed', `❌ Failed to publish task on-chain (draftId: ${created.draftId})`);
       task.error = 'Publish failed — the draft was created but could not be broadcast.';
-      taskStore.set(localId, task);
+      saveTask(localId, task);
       return;
     }
 
@@ -184,7 +209,7 @@ async function runRealTaskCreation(
       'pending_agent',
       `📡 Task published on-chain (jobId: ${created.jobId}). Waiting for ${task.agentName} to accept…`
     );
-    taskStore.set(localId, task);
+    saveTask(localId, task);
 
     // Step 2: Poll platform status until terminal
     await pollUntilTerminal(localId);
@@ -193,7 +218,7 @@ async function runRealTaskCreation(
     if (!t) return;
     pushEvent(t, 'failed', `❌ Error: ${err instanceof Error ? err.message : String(err)}`);
     t.error = err instanceof Error ? err.message : String(err);
-    taskStore.set(localId, t);
+    saveTask(localId, t);
   }
 }
 
@@ -232,7 +257,7 @@ async function refreshTaskStatus(localId: string) {
       }
     }
 
-    taskStore.set(localId, task);
+    saveTask(localId, task);
   } catch {
     // Non-fatal — just keep the last known status
   }

@@ -44,8 +44,8 @@ console.log('\n=== Starting A2A Daemon in Foreground ===');
 function startDaemon() {
     console.log(`[${new Date().toISOString()}] Launching daemon process: npx @okxweb3/a2a-node run`);
     
-    // Spawn the daemon process
-    const daemon = spawn('npx', ['@okxweb3/a2a-node', 'run'], {
+    // Spawn the daemon process using the CLI to target all 5 agents
+    const daemon = spawn('npx', ['onchainos', 'agent', 'keep-alive', '--agent-ids', '4885,3278,3274,3272,3601'], {
         shell: true,
         stdio: 'inherit' // Pipes output directly to Render's console logs
     });
