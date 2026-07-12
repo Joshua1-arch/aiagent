@@ -37,8 +37,8 @@ jobs:
           $startTime = Get-Date
           while ((Get-Date) -lt $startTime.AddHours(5).AddMinutes(45)) {
               Write-Host "Sending manual heartbeats for GigAgent and PaySlip..."
-              onchainos agent heartbeat --agent-id 3274 --chain-index 196
-              onchainos agent heartbeat --agent-id 3272 --chain-index 196
+              cd gigagent; onchainos agent heartbeat --chain-index 196; cd ..
+              cd payslip; onchainos agent heartbeat --chain-index 196; cd ..
               
               Write-Host "Starting a2a-node run..."
               # Run a2a-node for 4 minutes then kill it, to allow the loop to repeat
