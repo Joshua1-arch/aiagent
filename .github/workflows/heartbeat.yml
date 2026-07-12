@@ -57,4 +57,5 @@ jobs:
               Write-Host "Loop completed. Restarting in 10s..."
               Start-Sleep -Seconds 10
           }
+          exit 0
         shell: powershell
