@@ -17,17 +17,16 @@ jobs:
 
       - name: Bootstrap OnchainOS
         run: |
-          mkdir ~/.onchainos
-          echo '${{ secrets.SESSION_JSON_CONTENT }}' > ~/.onchainos/session.json
-          echo '${{ secrets.WALLETS_JSON_CONTENT }}' > ~/.onchainos/wallets.json
-        shell: bash
+          $onchainosDir = "$env:USERPROFILE\.onchainos"
+          if (-not (Test-Path $onchainosDir)) { New-Item -ItemType Directory -Force -Path $onchainosDir }
+          Set-Content -Path "$onchainosDir\session.json" -Value '${{ secrets.SESSION_JSON_CONTENT }}'
+          Set-Content -Path "$onchainosDir\wallets.json" -Value '${{ secrets.WALLETS_JSON_CONTENT }}'
+        shell: powershell
 
       - name: Setup PATH for OnchainOS
         run: |
-          mkdir -p ~/.local/bin
-          cp .bin/onchainos.exe ~/.local/bin/
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-        shell: bash
+          echo "$env:GITHUB_WORKSPACE\.bin" >> $env:GITHUB_PATH
+        shell: powershell
 
       - name: Install a2a-node
         run: npm install -g @okxweb3/a2a-node@latest
@@ -37,12 +36,17 @@ jobs:
           $startTime = Get-Date
           while ((Get-Date) -lt $startTime.AddHours(5).AddMinutes(45)) {
               Write-Host "Sending manual heartbeats for GigAgent and PaySlip..."
-              cd gigagent; onchainos agent heartbeat --chain-index 196; cd ..
-              cd payslip; onchainos agent heartbeat --chain-index 196; cd ..
+              try {
+                  cd gigagent; & onchainos.exe agent heartbeat --chain-index 196; cd ..
+                  cd payslip; & onchainos.exe agent heartbeat --chain-index 196; cd ..
+              } catch {
+                  Write-Host "Heartbeat failed: $_"
+                  cd $env:GITHUB_WORKSPACE
+              }
               
               Write-Host "Starting a2a-node run..."
               # Run a2a-node for 4 minutes then kill it, to allow the loop to repeat
-              $job = Start-Job -ScriptBlock { npx @okxweb3/a2a-node run }
+              $job = Start-Job -ScriptBlock { a2a-node run }
               Start-Sleep -Seconds 240
               Stop-Job $job
               Remove-Job $job
