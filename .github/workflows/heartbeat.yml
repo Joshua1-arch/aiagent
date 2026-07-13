@@ -20,11 +20,10 @@ jobs:
           SESSION_JSON: ${{ secrets.SESSION_JSON_CONTENT }}
           WALLETS_JSON: ${{ secrets.WALLETS_JSON_CONTENT }}
         run: |
-          $onchainosDir = "$env:USERPROFILE\.onchainos"
-          if (-not (Test-Path $onchainosDir)) { New-Item -ItemType Directory -Force -Path $onchainosDir }
-          Set-Content -Path "$onchainosDir\session.json" -Value $env:SESSION_JSON
-          Set-Content -Path "$onchainosDir\wallets.json" -Value $env:WALLETS_JSON
-        shell: powershell
+          mkdir -p ~/.onchainos
+          echo "$SESSION_JSON" > ~/.onchainos/session.json
+          echo "$WALLETS_JSON" > ~/.onchainos/wallets.json
+        shell: bash
 
       - name: Setup PATH for OnchainOS
         run: |
