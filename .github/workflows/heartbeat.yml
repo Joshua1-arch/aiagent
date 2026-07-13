@@ -14,34 +14,57 @@ jobs:
         env:
           SESSION_JSON: ${{ secrets.SESSION_JSON_CONTENT }}
           WALLETS_JSON: ${{ secrets.WALLETS_JSON_CONTENT }}
+        shell: pwsh
         run: |
-          mkdir -p ~/.onchainos
-          echo "$SESSION_JSON" > ~/.onchainos/session.json
-          echo "$WALLETS_JSON" > ~/.onchainos/wallets.json
-        shell: bash
+          $onchainosDir = Join-Path $env:USERPROFILE ".onchainos"
+          New-Item -ItemType Directory -Path $onchainosDir -Force | Out-Null
+          $sessionPath = Join-Path $onchainosDir "session.json"
+          $walletsPath = Join-Path $onchainosDir "wallets.json"
+          [System.IO.File]::WriteAllText($sessionPath, $env:SESSION_JSON)
+          [System.IO.File]::WriteAllText($walletsPath, $env:WALLETS_JSON)
+          Write-Host "Config written to $onchainosDir"
+          Write-Host "session.json size: $((Get-Item $sessionPath).Length) bytes"
+          Write-Host "wallets.json size: $((Get-Item $walletsPath).Length) bytes"
 
       - name: Install OnchainOS CLI
-        shell: bash
+        shell: pwsh
         run: |
-          LATEST_TAG=$(curl -sSL "https://api.github.com/repos/okx/onchainos-skills/releases/latest" | grep '"tag_name"' | sed 's/.*"tag_name": *"//;s/".*//')
-          echo "Latest tag: $LATEST_TAG"
-          curl -sSL "https://raw.githubusercontent.com/okx/onchainos-skills/${LATEST_TAG}/install.sh" -o /tmp/onchainos-install.sh
-          sh /tmp/onchainos-install.sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/okx/onchainos-skills/releases/latest"
+          $tag = $release.tag_name
+          Write-Host "Latest tag: $tag"
+          $installUrl = "https://raw.githubusercontent.com/okx/onchainos-skills/$tag/install.ps1"
+          Write-Host "Downloading: $installUrl"
+          Invoke-WebRequest -Uri $installUrl -OutFile "$env:TEMP\onchainos-install.ps1"
+          Write-Host "Running installer..."
+          & "$env:TEMP\onchainos-install.ps1"
+          $binPath = Join-Path $env:USERPROFILE ".local\bin"
+          Write-Host "Bin path: $binPath"
+          Write-Host "onchainos.exe exists: $(Test-Path (Join-Path $binPath 'onchainos.exe'))"
+          echo $binPath >> $env:GITHUB_PATH
 
       - name: Verify CLI
-        run: onchainos --version
-        shell: bash
+        shell: pwsh
+        run: |
+          $env:PATH = "$(Join-Path $env:USERPROFILE '.local\bin');$env:PATH"
+          onchainos --version
 
       - name: Send heartbeats (loop ~5h45m)
-        shell: bash
+        shell: pwsh
         run: |
-          START=$(date +%s)
-          END=$((START + 5*3600 + 45*60))
-          while [ $(date +%s) -lt $END ]; do
-              echo "[$(date -Iseconds)] Sending heartbeat for all agents..."
-              onchainos agent heartbeat --chain-index 196 || echo "Heartbeat failed (non-fatal)"
-              echo "Next heartbeat in 5 minutes..."
-              sleep 300
-          done
-          echo "Loop finished."
+          $env:PATH = "$(Join-Path $env:USERPROFILE '.local\bin');$env:PATH"
+          $startTime = Get-Date
+          $endTime = $startTime.AddHours(5).AddMinutes(45)
+          Write-Host "Loop started at $startTime, will run until $endTime"
+          while ((Get-Date) -lt $endTime) {
+              $now = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
+              Write-Host "[$now] Sending heartbeat for all agents..."
+              try {
+                  onchainos agent heartbeat --chain-index 196
+                  Write-Host "Heartbeat OK"
+              } catch {
+                  Write-Host "Heartbeat FAILED: $_"
+              }
+              Write-Host "Sleeping 5 minutes..."
+              Start-Sleep -Seconds 300
+          }
+          Write-Host "Loop finished."
