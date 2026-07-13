@@ -38,10 +38,12 @@ jobs:
         run: |
           $startTime = Get-Date
           while ((Get-Date) -lt $startTime.AddHours(5).AddMinutes(45)) {
-              Write-Host "Sending manual heartbeats for GigAgent and PaySlip..."
+              Write-Host "Sending manual heartbeats for all agents..."
               try {
                   cd gigagent; & onchainos.exe agent heartbeat --chain-index 196; cd ..
                   cd payslip; & onchainos.exe agent heartbeat --chain-index 196; cd ..
+                  cd trustaudit; & onchainos.exe agent heartbeat --chain-index 196; cd ..
+                  cd agent-broker; & onchainos.exe agent heartbeat --chain-index 196; cd ..
               } catch {
                   Write-Host "Heartbeat failed: $_"
                   cd $env:GITHUB_WORKSPACE
