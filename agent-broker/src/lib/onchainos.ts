@@ -5,8 +5,8 @@ import type { MarketAgent, SearchResult } from './types';
 const execAsync = promisify(exec);
 const CLI = 'onchainos';
 
-// The buyer agent ID used to create tasks (AgentBroker = user-role agent)
-export const BUYER_AGENT_ID = process.env.BROKER_AGENT_ID ?? '4868';
+// The buyer agent ID used to create tasks (AgentGate = user-role agent)
+export const BUYER_AGENT_ID = process.env.AGENTGATE_AGENT_ID ?? '4885';
 
 // ── Generic CLI runner ────────────────────────────────────
 export async function run(cmd: string): Promise<unknown> {
@@ -114,7 +114,7 @@ const BROKEN_AGENT_IDS = new Set(['3345', '2023', '2135', '4570']);
 // ── Public API: search ────────────────────────────────────
 export async function searchAgents(query: string, budget: number): Promise<SearchResult> {
   type Resp = { ok: boolean; data: { list: Record<string, unknown>[]; total: number } };
-  
+
   // Resolve query keyword to prevent long sentences from failing in Elasticsearch
   let queryTerm = query;
   if (query.toLowerCase().includes('collabshield')) {
@@ -134,7 +134,7 @@ export async function searchAgents(query: string, budget: number): Promise<Searc
     .filter(raw => typeof raw.status !== 'number' || raw.status === 1)
     .map(normalizeAgent)
     .filter(a => a.services.length > 0 && !BROKEN_AGENT_IDS.has(a.agentId));
-    
+
   const scored = agents
     .map((a) => ({ agent: a, score: scoreAgent(a, budget, query) }))
     .sort((x, y) => y.score - x.score);
@@ -156,12 +156,12 @@ export async function getMarketplaceAgents(page = 1) {
   ) as Resp;
 
   if (!result?.ok || !result?.data?.list) return { agents: [], total: 0 };
-  
+
   // Filter out agents without active services or with known on-chain registry issues
   const agents = result.data.list
     .map(normalizeAgent)
     .filter(a => a.services.length > 0 && !BROKEN_AGENT_IDS.has(a.agentId));
-    
+
   return {
     agents,
     total: agents.length,
@@ -186,9 +186,9 @@ export interface CreatedTask {
 export async function createAndPublishTask(input: CreateTaskInput): Promise<CreatedTask> {
   // 1. Sanitise fields — platform enforces 30-char title limit
   const rawTitle = input.title.replace(/"/g, "'");
-  const title    = rawTitle.length > 30 ? rawTitle.slice(0, 27) + '…' : rawTitle;
-  const summary  = input.description.slice(0, 100).replace(/"/g, "'");
-  const desc     = input.description.replace(/"/g, "'");
+  const title = rawTitle.length > 30 ? rawTitle.slice(0, 27) + '…' : rawTitle;
+  const summary = input.description.slice(0, 100).replace(/"/g, "'");
+  const desc = input.description.replace(/"/g, "'");
 
   // 2. Resolve service details dynamically
   let serviceId = input.serviceId;
@@ -354,16 +354,16 @@ export async function confirmComplete(jobId: string): Promise<boolean> {
 export function mapStatusCode(code: number): string {
   const map: Record<number, string> = {
     [-1]: 'publishing',     // Init
-    0:  'pending_agent',    // Created: awaiting acceptance
-    1:  'in_progress',      // Accepted: provider working
-    2:  'verifying',        // Submitted: delivered, waiting for review
-    3:  'failed',           // Rejected
-    4:  'verifying',        // Disputed
-    5:  'failed',           // AdminStopped
-    6:  'complete',         // Completed
-    7:  'failed',           // Close
-    8:  'failed',           // Expired
-    9:  'failed',           // Failed (refunded)
+    0: 'pending_agent',    // Created: awaiting acceptance
+    1: 'in_progress',      // Accepted: provider working
+    2: 'verifying',        // Submitted: delivered, waiting for review
+    3: 'failed',           // Rejected
+    4: 'verifying',        // Disputed
+    5: 'failed',           // AdminStopped
+    6: 'complete',         // Completed
+    7: 'failed',           // Close
+    8: 'failed',           // Expired
+    9: 'failed',           // Failed (refunded)
   };
   return map[code] ?? 'in_progress';
 }

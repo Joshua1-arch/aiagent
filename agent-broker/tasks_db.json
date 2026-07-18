@@ -1,0 +1,394 @@
+{
+  "BRK-1783787662321-XCBL": {
+    "jobId": "BRK-1783787662321-XCBL",
+    "platformJobId": "0xde82731dea8b491642b196eddf5f62f6b6a51853ba073a6543dad1c0ab958540",
+    "draftId": "0xde82731dea8b491642b196eddf5f62f6b6a51853ba073a6543dad1c0ab958540",
+    "taskDescription": "Audit smart contract on Sepolia for vulnerabilities",
+    "budget": 5,
+    "agentId": "4261",
+    "agentName": "Venant",
+    "serviceId": "24278",
+    "serviceName": "Web Application Pentest",
+    "status": "failed",
+    "createdAt": "2026-07-11T16:34:22.321Z",
+    "updatedAt": "2026-07-11T16:34:50.201Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T16:34:22.321Z",
+        "event": "📤 Creating task for Venant…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T16:34:50.201Z",
+        "event": "❌ Failed to publish task on-chain (draftId: 0xde82731dea8b491642b196eddf5f62f6b6a51853ba073a6543dad1c0ab958540)",
+        "status": "failed"
+      }
+    ],
+    "error": "Publish failed — the draft was created but could not be broadcast."
+  },
+  "BRK-1783793192843-6S9G": {
+    "jobId": "BRK-1783793192843-6S9G",
+    "platformJobId": "0x651161ce98dc7b679b0091b8fd75bf9ff06c776c7fe120db750f67291694ba75",
+    "draftId": "0x651161ce98dc7b679b0091b8fd75bf9ff06c776c7fe120db750f67291694ba75",
+    "taskDescription": "Verify GitHub PR diffs against task spec using CollabShield",
+    "budget": 0.01,
+    "agentId": "3601",
+    "agentName": "CollabShield",
+    "serviceId": "17877",
+    "serviceName": "PR Code Auditor",
+    "status": "pending_agent",
+    "createdAt": "2026-07-11T18:06:32.843Z",
+    "updatedAt": "2026-07-11T18:07:04.112Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T18:06:32.843Z",
+        "event": "📤 Creating task for CollabShield…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T18:07:04.112Z",
+        "event": "📡 Task published on-chain (jobId: 0x651161ce98dc7b679b0091b8fd75bf9ff06c776c7fe120db750f67291694ba75). Waiting for CollabShield to accept…",
+        "status": "pending_agent"
+      }
+    ]
+  },
+  "BRK-1783794279199-5TRT": {
+    "jobId": "BRK-1783794279199-5TRT",
+    "platformJobId": "0x08ae50657adc1e980335b8f94a67aefd87e5e21938d28a4229692dbcfb29911c",
+    "draftId": "0x08ae50657adc1e980335b8f94a67aefd87e5e21938d28a4229692dbcfb29911c",
+    "taskDescription": "Generate Agent Trading Card for dealer.exe",
+    "budget": 0.01,
+    "agentId": "2570",
+    "agentName": "dealer.exe",
+    "serviceId": "11063",
+    "serviceName": "Generate Agent Trading Card",
+    "status": "pending_agent",
+    "createdAt": "2026-07-11T18:24:39.200Z",
+    "updatedAt": "2026-07-11T18:25:02.166Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T18:24:39.200Z",
+        "event": "📤 Creating task for dealer.exe…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T18:25:02.166Z",
+        "event": "📡 Task published on-chain (jobId: 0x08ae50657adc1e980335b8f94a67aefd87e5e21938d28a4229692dbcfb29911c). Waiting for dealer.exe to accept…",
+        "status": "pending_agent"
+      }
+    ]
+  },
+  "BRK-1783795660823-UVRA": {
+    "jobId": "BRK-1783795660823-UVRA",
+    "platformJobId": null,
+    "draftId": "",
+    "taskDescription": "gigagent",
+    "budget": 0.01,
+    "agentId": "3274",
+    "agentName": "GigAgent",
+    "serviceId": "5526",
+    "serviceName": "Freelance Pitch & Invoice",
+    "status": "failed",
+    "createdAt": "2026-07-11T18:47:40.823Z",
+    "updatedAt": "2026-07-11T18:47:42.464Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T18:47:40.823Z",
+        "event": "📤 Creating task for GigAgent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T18:47:42.464Z",
+        "event": "❌ Error: Draft creation failed: {\"ok\":false,\"error\":\"description is too short (minimum 20 chars, currently 8)\"}",
+        "status": "failed"
+      }
+    ],
+    "error": "Draft creation failed: {\"ok\":false,\"error\":\"description is too short (minimum 20 chars, currently 8)\"}"
+  },
+  "BRK-1783795750169-VU6I": {
+    "jobId": "BRK-1783795750169-VU6I",
+    "platformJobId": "0x9fa748d10b91eaa46588b2a9e31f917826b1ff72609ee491b1803c172139f722",
+    "draftId": "0x9fa748d10b91eaa46588b2a9e31f917826b1ff72609ee491b1803c172139f722",
+    "taskDescription": "Please use GigAgent to help me write a new invoice today",
+    "budget": 0.01,
+    "agentId": "3274",
+    "agentName": "GigAgent",
+    "serviceId": "5526",
+    "serviceName": "Freelance Pitch & Invoice",
+    "status": "failed",
+    "createdAt": "2026-07-11T18:49:10.169Z",
+    "updatedAt": "2026-07-11T18:49:25.853Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T18:49:10.169Z",
+        "event": "📤 Creating task for GigAgent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T18:49:25.853Z",
+        "event": "❌ Failed to publish task on-chain (draftId: 0x9fa748d10b91eaa46588b2a9e31f917826b1ff72609ee491b1803c172139f722)",
+        "status": "failed"
+      }
+    ],
+    "error": "Publish failed — the draft was created but could not be broadcast."
+  },
+  "BRK-1783796504079-W8Q8": {
+    "jobId": "BRK-1783796504079-W8Q8",
+    "platformJobId": "0xM0CK6FE5E6D1",
+    "draftId": "",
+    "taskDescription": "Scan my smart contract 0x1234... for security risks and honeypot patterns",
+    "budget": 5,
+    "agentId": "2012",
+    "agentName": "Barker Yield Agent",
+    "serviceId": "27359",
+    "serviceName": "Stablecoin Yield Radar",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:01:44.080Z",
+    "updatedAt": "2026-07-11T19:01:54.110Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:01:44.080Z",
+        "event": "📤 Creating task for Barker Yield Agent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:01:47.089Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CK6FE5E6D1). Waiting for Barker Yield Agent to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:01:50.105Z",
+        "event": "⚡ Barker Yield Agent is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:01:54.110Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "Here is the completed work you requested. I have analyzed your requirements and delivered the final output. Thank you for hiring me!"
+  },
+  "BRK-1783796691010-NOOH": {
+    "jobId": "BRK-1783796691010-NOOH",
+    "platformJobId": "0xM0CK8723A081",
+    "draftId": "",
+    "taskDescription": "Find the best USDC yield opportunity for $10,000 right now",
+    "budget": 0.01,
+    "agentId": "2012",
+    "agentName": "Barker Yield Agent",
+    "serviceId": "27359",
+    "serviceName": "Stablecoin Yield Radar",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:04:51.010Z",
+    "updatedAt": "2026-07-11T19:05:01.018Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:04:51.010Z",
+        "event": "📤 Creating task for Barker Yield Agent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:04:54.012Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CK8723A081). Waiting for Barker Yield Agent to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:04:57.016Z",
+        "event": "⚡ Barker Yield Agent is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:05:01.018Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by Barker Yield Agent]\n\nI have successfully analyzed your request:\n\"Find the best USDC yield opportunity for $10,000 right now...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\nBased on the provided parameters, the requested operation was executed perfectly. All metrics, data points, and logic requirements have been evaluated and securely fulfilled.\n\nTotal budget consumed: 0.01 USDT.\nExecution Signature: 0x3096723fb7f2f8"
+  },
+  "BRK-1783796931396-E1UR": {
+    "jobId": "BRK-1783796931396-E1UR",
+    "platformJobId": "0xM0CK6B5CD870",
+    "draftId": "",
+    "taskDescription": "Find the best USDC yield opportunity for $10,000 right now",
+    "budget": 0.01,
+    "agentId": "2012",
+    "agentName": "Barker Yield Agent",
+    "serviceId": "27359",
+    "serviceName": "Stablecoin Yield Radar",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:08:51.396Z",
+    "updatedAt": "2026-07-11T19:09:01.422Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:08:51.396Z",
+        "event": "📤 Creating task for Barker Yield Agent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:08:54.402Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CK6B5CD870). Waiting for Barker Yield Agent to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:08:57.407Z",
+        "event": "⚡ Barker Yield Agent is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:09:01.422Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by Barker Yield Agent]\n\nI have successfully analyzed your request:\n\"Find the best USDC yield opportunity for $10,000 right now...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\n**Top USDC Yield Opportunities Analyzed (Live Data):**\n| Protocol | Chain | APY | TVL | Risk Score |\n|----------|-------|-----|-----|------------|\n| Aave V3 | X Layer | 8.42% | $14M | Low |\n| Morpho | Base | 11.20% | $42M | Medium |\n| Curve | Arbitrum | 7.95% | $120M | Low |\n\n*Recommendation:* Deploying your $10,000 into Aave V3 on X Layer offers the best risk-adjusted yield today.\n\nTotal budget consumed: 0.01 USDT.\nExecution Signature: 0x34bf1678106fc"
+  },
+  "BRK-1783797209488-IK1I": {
+    "jobId": "BRK-1783797209488-IK1I",
+    "platformJobId": "0xM0CK83056468",
+    "draftId": "",
+    "taskDescription": "Find the best USDC yield opportunity for $10,000 right now",
+    "budget": 0.01,
+    "agentId": "2012",
+    "agentName": "Barker Yield Agent",
+    "serviceId": "27359",
+    "serviceName": "Stablecoin Yield Radar",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:13:29.488Z",
+    "updatedAt": "2026-07-11T19:13:39.502Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:13:29.488Z",
+        "event": "📤 Creating task for Barker Yield Agent…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:13:32.491Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CK83056468). Waiting for Barker Yield Agent to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:13:35.500Z",
+        "event": "⚡ Barker Yield Agent is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:13:39.502Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by Barker Yield Agent]\n\nI have successfully analyzed your request:\n\"Find the best USDC yield opportunity for $10,000 right now...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\n**Top USDC Yield Opportunities Analyzed (Live Data):**\n| Protocol | Chain | APY | TVL | Risk Score |\n|----------|-------|-----|-----|------------|\n| Aave V3 | X Layer | 8.42% | $14M | Low |\n| Morpho | Base | 11.20% | $42M | Medium |\n| Curve | Arbitrum | 7.95% | $120M | Low |\n\n*Recommendation:* Deploying your $10,000 into Aave V3 on X Layer offers the best risk-adjusted yield today.\n\nTotal budget consumed: 0.01 USDT.\nExecution Signature: 0xbdd4557a488de"
+  },
+  "BRK-1783799439642-JIV5": {
+    "jobId": "BRK-1783799439642-JIV5",
+    "platformJobId": "0xM0CKA2FE472B",
+    "draftId": "",
+    "taskDescription": "Verify GitHub PR diffs against task spec using CollabShield:\n# Spec: User Profile Card Component\n- Build a responsive user profile card in React/TypeScript\n- Must contain an avatar image, name, role title, and bio paragraph\n- Include a \"Send Message\" button and a \"Follow\" button\n- The \"Follow\" button must toggle active state and call GET '/api/profile/follow'\n- Ensure basic prop validation or TypeScript interfaces for card props\n\nPR Link: https://github.com/okx/onchainos-skills/pull/12",
+    "budget": 0.01,
+    "agentId": "3601",
+    "agentName": "CollabShield",
+    "serviceId": "17877",
+    "serviceName": "PR Code Auditor",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:50:39.642Z",
+    "updatedAt": "2026-07-11T19:50:49.651Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:50:39.642Z",
+        "event": "📤 Creating task for CollabShield…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:50:42.644Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CKA2FE472B). Waiting for CollabShield to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:50:45.649Z",
+        "event": "⚡ CollabShield is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:50:49.651Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by CollabShield]\n\nI have successfully analyzed your request:\n\"Verify GitHub PR diffs against task spec using CollabShield:...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\n**CollabShield AI Code Audit Report**\n\n**Recommendation:** 🔴 REVISE\n**Confidence Score:** 66%\n\n**Spec Verification Checklist:**\n❌ **Create user profile form component**\n   *Note: Found TODO placeholder comments or unhandled logic in source files.*\n✅ **Connect UI to backend API endpoint**\n   *Note: Checked code diff and found implementation matches requirements.*\n✅ **Implement responsive dashboard layout**\n   *Note: Checked code diff and found implementation matches requirements.*\n\n**Vulnerabilities Found:**\n⚠️ Potential hardcoded credential or sensitive string detected in code diff.\n\n**Summary:**\nFallback Audit: Analyzed code against 3 specs. Compliance stands at 66%. Please address the highlighted failed requirements and security items.\n\nTotal budget consumed: 0.01 USDT.\nExecution Signature: 0x5c30cae831e128"
+  },
+  "BRK-1783799652561-GYQZ": {
+    "jobId": "BRK-1783799652561-GYQZ",
+    "platformJobId": "0xM0CK09563C5B",
+    "draftId": "",
+    "taskDescription": "Verify GitHub PR diffs against task spec using CollabShield:\n# Spec: User Profile Card Component\n- Build a responsive user profile card in React/TypeScript\n- Must contain an avatar image, name, role title, and bio paragraph\n- Include a \"Send Message\" button and a \"Follow\" button\n- The \"Follow\" button must toggle active state and call GET '/api/profile/follow'\n- Ensure basic prop validation or TypeScript interfaces for card props\n\nPR Link: https://github.com/okx/onchainos-skills/pull/12",
+    "budget": 0.01,
+    "agentId": "3601",
+    "agentName": "CollabShield",
+    "serviceId": "17877",
+    "serviceName": "PR Code Auditor",
+    "status": "complete",
+    "createdAt": "2026-07-11T19:54:12.561Z",
+    "updatedAt": "2026-07-11T19:54:22.573Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T19:54:12.561Z",
+        "event": "📤 Creating task for CollabShield…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T19:54:15.565Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CK09563C5B). Waiting for CollabShield to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T19:54:18.570Z",
+        "event": "⚡ CollabShield is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T19:54:22.573Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by CollabShield]\n\nI have successfully analyzed your request:\n\"Verify GitHub PR diffs against task spec using CollabShield:...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\nCollabShield AI Code Audit Report\n=============================================\n\nRecommendation: 🔴 REVISE\nConfidence Score: 78%\n\nSpec Verification Checklist:\n---------------------------------------------\n✅ Build a responsive user profile card in React/TypeScript\n   Note: Verified component structure and TypeScript interfaces in ProfileCard.tsx.\n\n❌ Must contain an avatar image, name, role title, and bio paragraph\n   Note: Bio paragraph is missing from the component markup.\n\n✅ Include a \"Send Message\" button and a \"Follow\" button\n   Note: Both buttons are present in the DOM structure.\n\n❌ The \"Follow\" button must toggle active state and call GET '/api/profile/follow'\n   Note: Found button, but onClick handler is missing the API call.\n\n✅ Ensure basic prop validation or TypeScript interfaces for card props\n   Note: ProfileProps interface is correctly defined and exported.\n\nVulnerabilities Found:\n---------------------------------------------\n⚠️ No critical security vulnerabilities detected in this diff.\n\nSummary:\n---------------------------------------------\nAnalyzed code against 5 specs. Compliance stands at 78%. Please address the missing bio paragraph and implement the API call on the Follow button before merging.\n\nTotal budget consumed: 0.01 USDT.\nExecution Signature: 0xcde1a97827f5a8"
+  },
+  "BRK-1783800265910-1U2E": {
+    "jobId": "BRK-1783800265910-1U2E",
+    "platformJobId": "0xM0CKC3E37806",
+    "draftId": "",
+    "taskDescription": "Verify GitHub PR diffs against task spec using CollabShield:\n# Spec: User Profile Card Component\n- Build a responsive user profile card in React/TypeScript\n- Must contain an avatar image, name, role title, and bio paragraph\n- Include a \"Send Message\" button and a \"Follow\" button\n- The \"Follow\" button must toggle active state and call GET '/api/profile/follow'\n- Ensure basic prop validation or TypeScript interfaces for card props\n\nPR Link: https://github.com/okx/onchainos-skills/pull/12",
+    "budget": 5,
+    "agentId": "3601",
+    "agentName": "CollabShield",
+    "serviceId": "17877",
+    "serviceName": "PR Code Auditor",
+    "status": "complete",
+    "createdAt": "2026-07-11T20:04:25.910Z",
+    "updatedAt": "2026-07-11T20:04:35.980Z",
+    "timeline": [
+      {
+        "time": "2026-07-11T20:04:25.910Z",
+        "event": "📤 Creating task for CollabShield…",
+        "status": "publishing"
+      },
+      {
+        "time": "2026-07-11T20:04:28.917Z",
+        "event": "📡 Task published on-chain (jobId: 0xM0CKC3E37806). Waiting for CollabShield to accept…",
+        "status": "pending_agent"
+      },
+      {
+        "time": "2026-07-11T20:04:31.926Z",
+        "event": "⚡ CollabShield is working on your task…",
+        "status": "in_progress"
+      },
+      {
+        "time": "2026-07-11T20:04:35.980Z",
+        "event": "✅ Output verified. Payment auto-released.",
+        "status": "complete"
+      }
+    ],
+    "result": "[Agent Deliverable — Generated by CollabShield]\n\nI have successfully analyzed your request:\n\"Verify GitHub PR diffs against task spec using CollabShield:...\"\n\n✓ Action Report:\n  - Task requirements fully verified and parsed.\n  - Connected to requested on-chain services & APIs.\n  - Deliverable compiled successfully.\n\n📊 Final Output:\nCollabShield AI Code Audit Report\n=============================================\n\nRecommendation: 🔴 REVISE\nConfidence Score: 78%\n\nSpec Verification Checklist:\n---------------------------------------------\n✅ Build a responsive user profile card in React/TypeScript\n   Note: Verified component structure and TypeScript interfaces in ProfileCard.tsx.\n\n❌ Must contain an avatar image, name, role title, and bio paragraph\n   Note: Bio paragraph is missing from the component markup.\n\n✅ Include a \"Send Message\" button and a \"Follow\" button\n   Note: Both buttons are present in the DOM structure.\n\n❌ The \"Follow\" button must toggle active state and call GET '/api/profile/follow'\n   Note: Found button, but onClick handler is missing the API call.\n\n✅ Ensure basic prop validation or TypeScript interfaces for card props\n   Note: ProfileProps interface is correctly defined and exported.\n\nVulnerabilities Found:\n---------------------------------------------\n⚠️ No critical security vulnerabilities detected in this diff.\n\nSummary:\n---------------------------------------------\nAnalyzed code against 5 specs. Compliance stands at 78%. Please address the missing bio paragraph and implement the API call on the Follow button before merging.\n\nTotal budget consumed: 5 USDT.\nExecution Signature: 0x53dd9bf312a5c"
+  }
+}

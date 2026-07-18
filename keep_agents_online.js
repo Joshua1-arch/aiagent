@@ -1,63 +1,81 @@
-// keep_agents_online.js
-// Cloud-ready agent heartbeat script for Render/Railway deployments.
-// Automatically bootstraps the session, runs the A2A daemon, and starts an HTTP server for Render's Free Web Service tier.
-
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const http = require('http');
 
-// Step 1: Bootstrap the OnchainOS session in the container
 const homeDir = os.homedir();
 const onchainosDir = path.join(homeDir, '.onchainos');
 
-console.log('=== OnchainOS Cloud Bootstrap ===');
+console.log('=== AgentGate Railway Bootstrap ===');
 console.log(`User Home: ${homeDir}`);
 console.log(`Target Dir: ${onchainosDir}`);
 
-if (process.env.SESSION_JSON_CONTENT && process.env.WALLETS_JSON_CONTENT) {
-    if (!fs.existsSync(onchainosDir)) {
-        fs.mkdirSync(onchainosDir, { recursive: true });
-    }
-    fs.writeFileSync(path.join(onchainosDir, 'session.json'), process.env.SESSION_JSON_CONTENT, 'utf8');
-    fs.writeFileSync(path.join(onchainosDir, 'wallets.json'), process.env.WALLETS_JSON_CONTENT, 'utf8');
-    console.log('✅ Session and Wallets configuration bootstrapped from environment variables.');
-} else {
-    console.log('⚠️ Environment variables SESSION_JSON_CONTENT or WALLETS_JSON_CONTENT not found.');
-    console.log('Running with existing local config (if any).');
+if (!fs.existsSync(onchainosDir)) {
+  fs.mkdirSync(onchainosDir, { recursive: true });
 }
 
-// Step 2: Start a simple HTTP server to satisfy Render Web Service port check
+// Bootstrap session from env vars
+const sessionContent = process.env.SESSION_JSON_CONTENT;
+const walletsContent = process.env.WALLETS_JSON_CONTENT;
+
+if (sessionContent && walletsContent) {
+  const sessionPath = path.join(onchainosDir, 'session.json');
+  const walletsPath = path.join(onchainosDir, 'wallets.json');
+  const cachePath = path.join(onchainosDir, 'cache.json');
+
+  fs.writeFileSync(sessionPath, Buffer.from(sessionContent, 'base64').toString('utf8'));
+  fs.writeFileSync(walletsPath, Buffer.from(walletsContent, 'base64').toString('utf8'));
+  fs.writeFileSync(cachePath, '{}');
+  console.log('Session and wallets bootstrapped from env vars.');
+} else {
+  console.log('No session env vars found. Checking existing config...');
+}
+
+// Copy skills-lock.json for AI provider
+const skillsLockPath = path.join(onchainosDir, 'skills-lock.json');
+if (fs.existsSync('skills-lock.json') && !fs.existsSync(skillsLockPath)) {
+  fs.copyFileSync('skills-lock.json', skillsLockPath);
+  console.log('skills-lock.json copied for AI provider.');
+}
+
+// HTTP health check server (required by Railway for port binding)
 const PORT = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, agent: 'AgentGate #4885', status: 'running' }));
+  } else {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('OKX Agent Daemon is running.');
+    res.end('AgentGate daemon running.');
+  }
 });
 server.listen(PORT, () => {
-    console.log(`\n✅ Web server listening on port ${PORT} (Render Free Tier check bypassed).`);
+  console.log(`Health check server listening on port ${PORT}`);
 });
 
-// Step 3: Start the A2A Daemon in the foreground (Self-Healing Process)
-console.log('\n=== Starting A2A Daemon in Foreground ===');
-
+// Start the okx-a2a daemon in foreground with auto-restart
 function startDaemon() {
-    console.log(`[${new Date().toISOString()}] Launching daemon process: npx @okxweb3/a2a-node run`);
-    
-    // Spawn the daemon process
-    const daemon = spawn('npx', ['--yes', '@okxweb3/a2a-node', 'run'], {
-        shell: true,
-        stdio: 'inherit' // Pipes output directly to Render's console logs
-    });
+  const daemon = spawn('npx', ['@okxweb3/a2a-node', 'run'], {
+    shell: true,
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      HOME: homeDir,
+      USERPROFILE: homeDir,
+    },
+  });
 
-    daemon.on('close', (code) => {
-        console.log(`[${new Date().toISOString()}] Daemon exited with code ${code}. Restarting in 5 seconds...`);
-        setTimeout(startDaemon, 5000);
-    });
+  daemon.on('close', (code) => {
+    console.log(`Daemon exited with code ${code}. Restarting in 5s...`);
+    setTimeout(startDaemon, 5000);
+  });
 
-    daemon.on('error', (err) => {
-        console.error('❌ Failed to start daemon process:', err);
-    });
+  daemon.on('error', (err) => {
+    console.error('Daemon spawn error:', err);
+    setTimeout(startDaemon, 10000);
+  });
 }
 
+console.log('Starting A2A daemon...');
 startDaemon();

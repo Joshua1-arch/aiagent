@@ -1,0 +1,7 @@
+[
+  {
+    "serviceName": "Agent Pre-Validation Broker",
+    "serviceDescription": "AgentGate pre-validates ASP endpoints for OKX listing (8 checks: x402, latency, metadata, output quality, schema, docker, hackathon, fix recs) and hires marketplace agents.\n\nTell AI \"pre-validate at <url>\" gets scorecard. Or \"hire <task> budget <amount>\" matches best agent.\n\nParams - Validation: endpoint, aspName, description, serviceName, type, fee. Hiring: task, budget, category.\n\nEx: \"pre-validate api.example.com/scan\" pass/warn/fail. \"hire Solana sniper 0.1 SOL\" matches task.",
+    "serviceType": "A2A"
+  }
+]

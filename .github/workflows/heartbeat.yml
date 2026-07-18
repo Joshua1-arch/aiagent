@@ -1,70 +1,11 @@
 name: Agent Heartbeat Keeper
 on:
-  schedule:
-    - cron: '0 */5 * * *'
   workflow_dispatch:
 
 jobs:
   keep-alive:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Bootstrap OnchainOS config
+      - name: Info
+        run: Write-Host "Manual heartbeat disabled — session is TEE-bound. Run 'onchainos agent heartbeat --chain-index 196' locally instead."
         shell: pwsh
-        run: |
-          $onchainosDir = Join-Path $env:USERPROFILE ".onchainos"
-          New-Item -ItemType Directory -Path $onchainosDir -Force | Out-Null
-          $sessionPath = Join-Path $onchainosDir "session.json"
-          $walletsPath = Join-Path $onchainosDir "wallets.json"
-          $sessionB64 = "${{ secrets.SESSION_JSON_B64 }}"
-          $walletsB64 = "${{ secrets.WALLETS_JSON_B64 }}"
-          [System.IO.File]::WriteAllBytes($sessionPath, [Convert]::FromBase64String($sessionB64))
-          [System.IO.File]::WriteAllBytes($walletsPath, [Convert]::FromBase64String($walletsB64))
-          Write-Host "Config written to $onchainosDir"
-          Write-Host "session.json size: $((Get-Item $sessionPath).Length) bytes"
-          Write-Host "wallets.json size: $((Get-Item $walletsPath).Length) bytes"
-          Write-Host "session.json preview: $((Get-Content $sessionPath -Raw).Substring(0, [Math]::Min(50, (Get-Content $sessionPath -Raw).Length)))..."
-
-      - name: Install OnchainOS CLI
-        shell: pwsh
-        run: |
-          $release = Invoke-RestMethod -Uri "https://api.github.com/repos/okx/onchainos-skills/releases/latest"
-          $tag = $release.tag_name
-          Write-Host "Latest tag: $tag"
-          $installUrl = "https://raw.githubusercontent.com/okx/onchainos-skills/$tag/install.ps1"
-          Write-Host "Downloading: $installUrl"
-          Invoke-WebRequest -Uri $installUrl -OutFile "$env:TEMP\onchainos-install.ps1"
-          Write-Host "Running installer..."
-          & "$env:TEMP\onchainos-install.ps1"
-          $binPath = Join-Path $env:USERPROFILE ".local\bin"
-          Write-Host "Bin path: $binPath"
-          Write-Host "onchainos.exe exists: $(Test-Path (Join-Path $binPath 'onchainos.exe'))"
-          echo $binPath >> $env:GITHUB_PATH
-
-      - name: Verify CLI
-        shell: pwsh
-        run: |
-          $env:PATH = "$(Join-Path $env:USERPROFILE '.local\bin');$env:PATH"
-          onchainos --version
-
-      - name: Send heartbeats (loop ~5h45m)
-        shell: pwsh
-        run: |
-          $env:PATH = "$(Join-Path $env:USERPROFILE '.local\bin');$env:PATH"
-          $startTime = Get-Date
-          $endTime = $startTime.AddHours(5).AddMinutes(45)
-          Write-Host "Loop started at $startTime, will run until $endTime"
-          while ((Get-Date) -lt $endTime) {
-              $now = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-              Write-Host "[$now] Sending heartbeat for all agents..."
-              try {
-                  onchainos agent heartbeat --chain-index 196
-                  Write-Host "Heartbeat OK"
-              } catch {
-                  Write-Host "Heartbeat FAILED: $_"
-              }
-              Write-Host "Sleeping 5 minutes..."
-              Start-Sleep -Seconds 300
-          }
-          Write-Host "Loop finished."

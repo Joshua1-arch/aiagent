@@ -2,10 +2,9 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import styles from './page.module.css';
-import type { MarketAgent } from '@/lib/types';
+import type { MarketAgent, ValidationResult } from '@/lib/types';
 import ConnectWallet from '@/components/ConnectWallet';
 
-/* ── Animated counter ────────────────────────────────────── */
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [val, setVal] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -32,14 +31,13 @@ function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: stri
   return <span ref={ref}>{val}{suffix}</span>;
 }
 
-/* ── Typing effect ───────────────────────────────────────── */
 const TASKS = [
   'Audit my smart contract for vulnerabilities',
   'Analyze my wallet\'s DeFi yield opportunities',
-  'Scan this Polymarket for mispriced bets',
-  'Research this token\'s on-chain risk profile',
-  'Generate a stablecoin yield strategy for $10k',
-  'Build me a chart analysis for BTC/USDT',
+  'Pre-check my ASP before OKX listing',
+  'Validate my endpoint for x402 compliance',
+  'Find the best agent for yield farming research',
+  'Check my listing metadata completeness',
 ];
 
 function TypingText() {
@@ -73,7 +71,6 @@ function TypingText() {
   );
 }
 
-/* ── Flow step ───────────────────────────────────────────── */
 function FlowStep({ num, icon, title, desc, delay }: {
   num: number; icon: string; title: string; desc: string; delay: number;
 }) {
@@ -87,7 +84,6 @@ function FlowStep({ num, icon, title, desc, delay }: {
   );
 }
 
-/* ── Feature card ────────────────────────────────────────── */
 function Feature({ icon, title, desc, color }: {
   icon: string; title: string; desc: string; color: string;
 }) {
@@ -102,7 +98,6 @@ function Feature({ icon, title, desc, color }: {
   );
 }
 
-/* ── Live agent preview card ─────────────────────────────── */
 function AgentPreviewCard({ agent }: { agent: MarketAgent }) {
   const catColors: Record<string, string> = {
     Finance: 'var(--green)',
@@ -145,14 +140,32 @@ function AgentPreviewCard({ agent }: { agent: MarketAgent }) {
   );
 }
 
-/* ── Main Landing Page ───────────────────────────────────── */
+function StatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    pass: 'var(--green)',
+    fail: 'var(--pink)',
+    warn: 'var(--orange)',
+    error: 'var(--pink)',
+  };
+  return (
+    <span
+      className="badge"
+      style={{
+        background: `${colors[status] || 'var(--text-muted)'}18`,
+        color: colors[status] || 'var(--text-2)',
+        border: `1px solid ${colors[status] || 'transparent'}40`,
+        fontSize: '11px',
+        textTransform: 'uppercase',
+      }}
+    >
+      {status}
+    </span>
+  );
+}
+
 export default function HomePage() {
   const [agents, setAgents] = useState<MarketAgent[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
-  const [demoQuery, setDemoQuery] = useState('');
-  const [demoBudget, setDemoBudget] = useState('5');
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [demoResult, setDemoResult] = useState<MarketAgent | null>(null);
 
   useEffect(() => {
     fetch('/api/agents?page=1')
@@ -164,23 +177,36 @@ export default function HomePage() {
       .finally(() => setAgentsLoading(false));
   }, []);
 
-  async function runDemo(e: React.FormEvent) {
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [valLoading, setValLoading] = useState(false);
+  const [valForm, setValForm] = useState({
+    aspName: '',
+    aspDescription: '',
+    serviceName: '',
+    serviceDescription: '',
+    serviceType: 'A2A' as 'A2A' | 'A2MCP',
+    fee: 0,
+    endpoint: '',
+    openApiSpec: '',
+    profilePicture: '',
+  });
+
+  async function runValidation(e: React.FormEvent) {
     e.preventDefault();
-    if (!demoQuery.trim()) return;
-    setDemoLoading(true);
-    setDemoResult(null);
+    setValLoading(true);
+    setValidationResult(null);
     try {
-      const res = await fetch('/api/broker/search', {
+      const res = await fetch('/api/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: demoQuery, budget: Number(demoBudget) }),
+        body: JSON.stringify(valForm),
       });
       const data = await res.json();
-      if (data.ok && data.recommended) setDemoResult(data.recommended);
+      if (data.ok) setValidationResult(data as ValidationResult);
     } catch {
       // ignore
     } finally {
-      setDemoLoading(false);
+      setValLoading(false);
     }
   }
 
@@ -191,11 +217,11 @@ export default function HomePage() {
         <div className={`container-wide ${styles.navInner}`}>
           <div className={styles.navLogo}>
             <span className={styles.navLogoIcon}>⬡</span>
-            <span>AgentBroker</span>
+            <span>AgentGate</span>
           </div>
           <div className={styles.navLinks}>
             <a href="#how" className={styles.navLink}>How it works</a>
-            <a href="#features" className={styles.navLink}>Features</a>
+            <a href="#validate" className={styles.navLink}>Pre-Validate</a>
             <a href="#marketplace" className={styles.navLink}>Marketplace</a>
             <ConnectWallet />
             <Link href="/dashboard" className="btn btn-primary btn-sm">
@@ -212,30 +238,29 @@ export default function HomePage() {
         <div className={`container ${styles.heroContent}`}>
           <div className={styles.heroPill}>
             <span className="dot-online" />
-            <span>Live on OKX.AI — 35 agents available</span>
+            <span>Live on OKX.AI — Pre-Validate & Hire</span>
           </div>
 
           <h1 className={styles.heroTitle}>
-            The AI Agent<br />
-            That <span className="grad-text">Hires</span> AI Agents
+            The <span className="grad-text">Quality Gate</span><br />
+            for AI Agents
           </h1>
 
           <p className={styles.heroSub}>
-            Describe what you need. AgentBroker searches the OKX.AI marketplace, picks the
-            best agent, submits the task, monitors delivery, and releases payment — all
-            autonomously, on-chain.
+            Pre-check your ASP before listing to avoid rejection. Then hire the best
+            agents on the marketplace. AgentGate validates, matches, and manages —
+            all on-chain.
           </p>
 
           <div className={styles.heroCtas}>
-            <Link href="/dashboard" className="btn btn-primary btn-lg">
-              Start Brokering →
-            </Link>
-            <a href="#how" className="btn btn-outline btn-lg">
-              See how it works
+            <a href="#validate" className="btn btn-primary btn-lg">
+              Pre-Validate Your ASP →
             </a>
+            <Link href="/dashboard" className="btn btn-outline btn-lg">
+              Hire an Agent →
+            </Link>
           </div>
 
-          {/* Animated typing demo */}
           <div className={styles.heroDemo}>
             <div className={styles.heroDemoLabel}>Try saying:</div>
             <div className={styles.heroDemoText}>
@@ -243,16 +268,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Stats */}
           <div className={styles.heroStats}>
             <div className={styles.heroStat}>
-              <div className={styles.heroStatNum}><AnimatedNumber target={35} />+</div>
-              <div className={styles.heroStatLabel}>Listed Agents</div>
+              <div className={styles.heroStatNum}><AnimatedNumber target={278} />+</div>
+              <div className={styles.heroStatLabel}>Marketplace Agents</div>
             </div>
             <div className={styles.heroStatDivider} />
             <div className={styles.heroStat}>
-              <div className={styles.heroStatNum}><AnimatedNumber target={246} /></div>
-              <div className={styles.heroStatLabel}>Tasks Completed</div>
+              <div className={styles.heroStatNum}><AnimatedNumber target={8} /></div>
+              <div className={styles.heroStatLabel}>Validation Checks</div>
             </div>
             <div className={styles.heroStatDivider} />
             <div className={styles.heroStat}>
@@ -268,24 +292,141 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Problem Banner ── */}
-      <section className={styles.problemBanner}>
+      {/* ── Validation Section ── */}
+      <section id="validate" className={styles.demoSection}>
         <div className="container">
-          <div className={styles.problemInner}>
-            <div className={styles.problemStat}>
-              <span className={styles.problemNum}>35</span>
-              <span>AI agents on OKX.AI</span>
+          <div className={styles.demoBox}>
+            <div className={styles.demoBoxHeader}>
+              <div className={styles.sectionEyebrow} style={{ color: 'var(--cyan)' }}>
+                PRE-VALIDATION CHECK
+              </div>
+              <h2 className={styles.sectionTitle} style={{ fontSize: '2rem' }}>
+                Check your ASP <span className="grad-text">before submission</span>
+              </h2>
+              <p className={styles.sectionSub}>
+                Avoid the opaque rejection loop. Paste your draft below and AgentGate
+                will check x402 compliance, endpoint quality, metadata completeness,
+                Docker compatibility, and more.
+              </p>
             </div>
-            <div className={styles.problemArrow}>→</div>
-            <div className={styles.problemStat}>
-              <span className={styles.problemNum}>0</span>
-              <span>unified way to hire them</span>
-            </div>
-            <div className={styles.problemArrow}>→</div>
-            <div className={styles.problemStat}>
-              <span className={styles.problemNum} style={{ color: 'var(--cyan)' }}>1</span>
-              <span>broker to rule them all</span>
-            </div>
+
+            <form onSubmit={runValidation} className={styles.demoForm}>
+              <div className={styles.demoFormRow}>
+                <div style={{ flex: 1 }}>
+                  <label className={styles.budgetLabel}>ASP Name</label>
+                  <input className="input" placeholder="e.g. My Security Scanner" value={valForm.aspName}
+                    onChange={(e) => setValForm({ ...valForm, aspName: e.target.value })} required />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label className={styles.budgetLabel}>Service Name</label>
+                  <input className="input" placeholder="e.g. Smart Contract Audit" value={valForm.serviceName}
+                    onChange={(e) => setValForm({ ...valForm, serviceName: e.target.value })} required />
+                </div>
+                <div style={{ flex: '0 0 120px' }}>
+                  <label className={styles.budgetLabel}>Type</label>
+                  <select className="input" value={valForm.serviceType}
+                    onChange={(e) => setValForm({ ...valForm, serviceType: e.target.value as 'A2A' | 'A2MCP' })}
+                    style={{ cursor: 'pointer' }}>
+                    <option value="A2A">A2A</option>
+                    <option value="A2MCP">A2MCP</option>
+                  </select>
+                </div>
+                <div style={{ flex: '0 0 100px' }}>
+                  <label className={styles.budgetLabel}>Fee (USDT)</label>
+                  <input className="input" type="number" min="0" step="0.01" value={valForm.fee}
+                    onChange={(e) => setValForm({ ...valForm, fee: parseFloat(e.target.value) || 0 })} />
+                </div>
+              </div>
+
+              <div>
+                <label className={styles.budgetLabel}>ASP Description</label>
+                <textarea className="input" rows={2} placeholder="Describe your agent and who it serves"
+                  value={valForm.aspDescription}
+                  onChange={(e) => setValForm({ ...valForm, aspDescription: e.target.value })} />
+              </div>
+
+              <div>
+                <label className={styles.budgetLabel}>Service Description <span style={{ color: 'var(--pink)' }}>(include parameter details & usage examples)</span></label>
+                <textarea className="input" rows={3}
+                  placeholder="Describe what your service does, what parameters it accepts, and show a usage example. Be specific — this is what the reviewer reads."
+                  value={valForm.serviceDescription}
+                  onChange={(e) => setValForm({ ...valForm, serviceDescription: e.target.value })} required />
+              </div>
+
+              {valForm.serviceType === 'A2MCP' && (
+                <div>
+                  <label className={styles.budgetLabel}>Endpoint URL</label>
+                  <input className="input" placeholder="https://your-agent.com/api/service"
+                    value={valForm.endpoint}
+                    onChange={(e) => setValForm({ ...valForm, endpoint: e.target.value })} />
+                </div>
+              )}
+
+              <button type="submit" className="btn btn-cyan btn-lg" style={{ width: '100%' }}
+                disabled={valLoading || !valForm.aspName || !valForm.serviceName || !valForm.serviceDescription}>
+                {valLoading ? '⟳ Running checks...' : '🔍 Run Pre-Validation →'}
+              </button>
+            </form>
+
+            {validationResult && (
+              <div style={{ marginTop: '24px' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px',
+                  padding: '12px 16px', borderRadius: '8px',
+                  background: validationResult.overall === 'pass' ? 'rgba(0,255,136,0.08)' :
+                    validationResult.overall === 'warn' ? 'rgba(255,165,0,0.08)' : 'rgba(255,77,125,0.08)',
+                  border: `1px solid ${
+                    validationResult.overall === 'pass' ? 'var(--green)' :
+                    validationResult.overall === 'warn' ? 'var(--orange)' : 'var(--pink)'
+                  }40`
+                }}>
+                  <span style={{ fontSize: '1.5rem' }}>
+                    {validationResult.overall === 'pass' ? '✅' : validationResult.overall === 'warn' ? '⚠️' : '❌'}
+                  </span>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>
+                      Score: {validationResult.score}/100 — {validationResult.overall === 'pass' ? 'Ready to submit' :
+                        validationResult.overall === 'warn' ? 'Minor issues' : 'Needs work'}
+                    </div>
+                    <div style={{ color: 'var(--text-2)', fontSize: '13px' }}>{validationResult.summary}</div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
+                  {validationResult.checks.map((c, i) => (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '8px',
+                      padding: '8px 12px', borderRadius: '6px', fontSize: '13px',
+                      background: c.status === 'pass' ? 'rgba(0,255,136,0.04)' :
+                        c.status === 'fail' ? 'rgba(255,77,125,0.04)' : 'rgba(255,165,0,0.04)',
+                    }}>
+                      <StatusBadge status={c.status} />
+                      <div>
+                        <div style={{ fontWeight: 600, marginBottom: '2px' }}>{c.name}</div>
+                        <div style={{ color: 'var(--text-2)' }}>{c.message}</div>
+                        {c.details && <div style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '2px' }}>{c.details}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {validationResult.recommendations.length > 0 && (
+                  <div style={{
+                    background: 'rgba(255,165,0,0.06)', border: '1px solid rgba(255,165,0,0.2)',
+                    borderRadius: '8px', padding: '16px'
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--orange)' }}>
+                      📋 Recommended Fixes
+                    </div>
+                    {validationResult.recommendations.map((r, i) => (
+                      <div key={i} style={{ padding: '4px 0', fontSize: '13px', color: 'var(--text-2)' }}>
+                        {i + 1}. {r}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -296,35 +437,35 @@ export default function HomePage() {
           <div className={styles.sectionHeader}>
             <div className={styles.sectionEyebrow}>HOW IT WORKS</div>
             <h2 className={styles.sectionTitle}>
-              Three steps to <span className="grad-text">automated execution</span>
+              Two sides of the <span className="grad-text">same gate</span>
             </h2>
             <p className={styles.sectionSub}>
-              No browsing. No negotiating. No monitoring. The broker handles everything.
+              Validate before listing. Hire with confidence. One agent for both sides of the marketplace.
             </p>
           </div>
 
           <div className={styles.flowGrid}>
             <FlowStep
               num={1}
-              icon="✍️"
-              title="Describe your task"
-              desc="Tell AgentBroker what you need in plain English. Set your budget. That's it."
+              icon="🔍"
+              title="Pre-Validate Your ASP"
+              desc="Submit your draft ASP — AgentGate checks x402 compliance, endpoint latency, Docker compat, metadata completeness, and more. Get a scorecard with fix recommendations."
               delay={0}
             />
             <div className={styles.flowConnector}>→</div>
             <FlowStep
               num={2}
-              icon="🔍"
-              title="Broker finds the best agent"
-              desc="Searches the live OKX.AI marketplace, scores agents by rating, sales history, price, and online status. Picks the optimal match."
+              icon="🤝"
+              title="Fix & Submit to OKX"
+              desc="Use the fix recommendations to polish your listing. Resubmit to OKX.AI with confidence, knowing all checks passed."
               delay={150}
             />
             <div className={styles.flowConnector}>→</div>
             <FlowStep
               num={3}
               icon="⚡"
-              title="Task executed & paid"
-              desc="Publishes the task, monitors delivery, verifies output quality, and releases on-chain payment. You get results."
+              title="Hire Verified Agents"
+              desc="Once your ASP is live, or if you just need work done, AgentGate searches the marketplace, finds the best agent, and manages the task on-chain."
               delay={300}
             />
           </div>
@@ -337,132 +478,52 @@ export default function HomePage() {
           <div className={styles.sectionHeader}>
             <div className={styles.sectionEyebrow}>FEATURES</div>
             <h2 className={styles.sectionTitle}>
-              Built for the <span className="grad-text-warm">agent economy</span>
+              Built for <span className="grad-text-warm">quality agents</span>
             </h2>
           </div>
 
           <div className="grid-3">
             <Feature
-              icon="🧠"
-              title="Smart Agent Matching"
-              desc="Semantic search across the live marketplace. Scores every agent by rating, sales history, response time, and price fit to your budget."
+              icon="🔒"
+              title="x402 Compliance Check"
+              desc="Verifies your endpoint returns proper HTTP 402 with PAYMENT-REQUIRED header, EIP-712 digest, accepts array, and Bazaar discovery extension."
               color="var(--purple-light)"
             />
             <Feature
-              icon="⛓️"
-              title="On-Chain Payment Escrow"
-              desc="Payment is held in smart contract escrow until the task is verified complete. You never pay for work that isn't delivered."
+              icon="⚡"
+              title="Endpoint Performance"
+              desc="Measures latency across multiple probes. Flags slow endpoints (>2s) that could be rejected during review or frustrate paying users."
               color="var(--cyan)"
             />
             <Feature
-              icon="📡"
-              title="Real-Time Task Monitoring"
-              desc="Live status feed from task published → agent accepted → in progress → verified → complete. Full visibility, zero effort."
+              icon="📋"
+              title="Metadata Completeness"
+              desc="Checks all listing fields — name, description, pricing, service type — against known OKX review criteria. Flags vague descriptions and missing fields."
               color="var(--green)"
             />
             <Feature
-              icon="✅"
-              title="Output Verification"
-              desc="Every deliverable is checked against your task requirements before payment is released. Bad output = no payment."
+              icon="🐳"
+              title="Docker Compatibility"
+              desc="Detects localhost bindings and unresolvable hostnames that will break inside Docker containers — the #1 deployment gotcha for agent endpoints."
               color="var(--orange)"
             />
             <Feature
-              icon="🔄"
-              title="Automatic Retry & Dispute"
-              desc="If an agent fails, the broker automatically re-searches and reassigns. Persistent failures trigger the OKX.AI dispute mechanism."
+              icon="📐"
+              title="Schema Validation"
+              desc="If you provide an OpenAPI spec, validates it against your endpoint. Ensures paths, methods, and request/response shapes are consistent."
               color="var(--pink)"
             />
             <Feature
-              icon="🤖"
-              title="Agent-to-Agent Native"
-              desc="Fully A2A compatible. Other agents can call AgentBroker to subcontract work — enabling multi-agent pipeline architectures."
+              icon="🏆"
+              title="Hackathon Eligibility"
+              desc="Checks if your ASP meets known hackathon requirements. Maps your service description to prize categories (Best Product, Revenue Rocket, etc.)."
               color="var(--yellow)"
             />
           </div>
         </div>
       </section>
 
-      {/* ── Live Demo ── */}
-      <section className={styles.demoSection}>
-        <div className="container">
-          <div className={styles.demoBox}>
-            <div className={styles.demoBoxHeader}>
-              <div className={styles.sectionEyebrow} style={{ color: 'var(--cyan)' }}>LIVE DEMO</div>
-              <h2 className={styles.sectionTitle} style={{ fontSize: '2rem' }}>
-                Try the broker <span className="grad-text">right now</span>
-              </h2>
-              <p className={styles.sectionSub}>
-                Type a task — the broker will search the live marketplace and recommend an agent.
-              </p>
-            </div>
-
-            <form onSubmit={runDemo} className={styles.demoForm}>
-              <textarea
-                className="input"
-                placeholder="e.g. Audit my smart contract 0xABC... for honeypot and rug pull risk"
-                value={demoQuery}
-                onChange={(e) => setDemoQuery(e.target.value)}
-                rows={3}
-              />
-              <div className={styles.demoFormRow}>
-                <div className={styles.budgetWrap}>
-                  <label className={styles.budgetLabel}>Budget (USDT)</label>
-                  <input
-                    className="input"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    value={demoBudget}
-                    onChange={(e) => setDemoBudget(e.target.value)}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-cyan btn-lg"
-                  disabled={demoLoading || !demoQuery.trim()}
-                >
-                  {demoLoading ? (
-                    <>
-                      <span className="animate-spin" style={{ display: 'inline-block' }}>⟳</span>
-                      Searching…
-                    </>
-                  ) : '🔍 Find Best Agent →'}
-                </button>
-              </div>
-            </form>
-
-            {demoResult && (
-              <div className={styles.demoResult}>
-                <div className={styles.demoResultLabel}>✅ Best match found:</div>
-                <div className={styles.demoResultCard}>
-                  <div className={styles.demoResultName}>{demoResult.name}</div>
-                  <div className={styles.demoResultMeta}>
-                    <span className="badge badge-purple">{demoResult.category}</span>
-                    {demoResult.rating && (
-                      <span className="badge badge-green">{demoResult.rating}</span>
-                    )}
-                    {demoResult.minPrice != null && (
-                      <span className="badge badge-cyan">{demoResult.minPrice} USDT</span>
-                    )}
-                    {demoResult.soldCount != null && demoResult.soldCount > 0 && (
-                      <span className="badge badge-muted">{demoResult.soldCount} sales</span>
-                    )}
-                  </div>
-                  <p className={styles.demoResultDesc}>
-                    {demoResult.description.slice(0, 200)}
-                    {demoResult.description.length > 200 ? '…' : ''}
-                  </p>
-                  <Link href="/dashboard" className="btn btn-primary" style={{ marginTop: '12px' }}>
-                    Hire this agent →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Live Marketplace Preview ── */}
+      {/* ── Marketplace Preview ── */}
       <section id="marketplace" className={styles.section}>
         <div className="container">
           <div className={styles.sectionHeader}>
@@ -471,7 +532,7 @@ export default function HomePage() {
               Agents available <span className="grad-text">right now</span>
             </h2>
             <p className={styles.sectionSub}>
-              AgentBroker pulls from the live OKX.AI marketplace. These are real agents, updated in real-time.
+              AgentGate pulls from the live OKX.AI marketplace. These are real agents, updated in real-time.
             </p>
           </div>
 
@@ -491,7 +552,7 @@ export default function HomePage() {
 
           <div style={{ textAlign: 'center', marginTop: '40px' }}>
             <Link href="/dashboard" className="btn btn-primary btn-lg">
-              Browse all agents & start brokering →
+              Browse all agents & start hiring →
             </Link>
           </div>
         </div>
@@ -502,25 +563,20 @@ export default function HomePage() {
         <div className={styles.ctaGlow} />
         <div className={`container ${styles.ctaContent}`}>
           <h2 className={styles.ctaTitle}>
-            Stop managing agents.<br />
-            <span className="grad-text">Let an agent manage them.</span>
+            One gate.<br />
+            <span className="grad-text">Both sides of the marketplace.</span>
           </h2>
           <p className={styles.ctaSub}>
-            AgentBroker is the missing coordination layer for the OKX.AI ecosystem.
-            Built on top of the OKX Agent Payments Protocol. Open and composable.
+            AgentGate is the quality gate for OKX.AI. Pre-validate your listing, then hire
+            with confidence. Built on the OKX Agent Payments Protocol. Open and composable.
           </p>
           <div className={styles.ctaBtns}>
-            <Link href="/dashboard" className="btn btn-primary btn-lg">
-              Launch AgentBroker →
-            </Link>
-            <a
-              href="https://web3.okx.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-outline btn-lg"
-            >
-              View on OKX.AI ↗
+            <a href="#validate" className="btn btn-primary btn-lg">
+              Pre-Validate Your ASP →
             </a>
+            <Link href="/dashboard" className="btn btn-outline btn-lg">
+              Hire an Agent ↗
+            </Link>
           </div>
         </div>
       </section>
@@ -530,7 +586,7 @@ export default function HomePage() {
         <div className={`container ${styles.footerInner}`}>
           <div className={styles.footerLogo}>
             <span style={{ fontSize: '24px' }}>⬡</span>
-            <span style={{ fontWeight: 700 }}>AgentBroker</span>
+            <span style={{ fontWeight: 700 }}>AgentGate</span>
           </div>
           <div className={styles.footerMeta}>
             Built for the OKX.AI Hackathon 2026 &nbsp;·&nbsp; Powered by OKX Agent Payments Protocol
@@ -538,6 +594,7 @@ export default function HomePage() {
           <div className={styles.footerLinks}>
             <Link href="/dashboard">Dashboard</Link>
             <a href="#how">How it works</a>
+            <a href="#validate">Pre-Validate</a>
             <a href="#marketplace">Marketplace</a>
           </div>
         </div>

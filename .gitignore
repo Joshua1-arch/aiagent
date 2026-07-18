@@ -1,2 +1,6 @@
 /my_agents_list.md
 /OKX_HACKATHON_PLAN.md
+
+# Environment files (may contain sensitive session data)
+.env
+*.local

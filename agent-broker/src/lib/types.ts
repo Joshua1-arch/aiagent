@@ -55,3 +55,32 @@ export interface BrokerSearchRequest {
   budget: number;
   category?: string;
 }
+
+export interface ValidationCheck {
+  name: string;
+  status: 'pass' | 'fail' | 'warn' | 'error';
+  message: string;
+  details?: string;
+  severity?: 'critical' | 'high' | 'medium' | 'low';
+}
+
+export interface ValidationResult {
+  overall: 'pass' | 'fail' | 'warn';
+  score: number;
+  summary: string;
+  checks: ValidationCheck[];
+  recommendations: string[];
+  timestamp: string;
+}
+
+export interface ValidateRequest {
+  aspName: string;
+  aspDescription: string;
+  serviceName: string;
+  serviceDescription: string;
+  serviceType: 'A2A' | 'A2MCP';
+  fee: number;
+  endpoint?: string;
+  openApiSpec?: string;
+  profilePicture?: string;
+}

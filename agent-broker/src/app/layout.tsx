@@ -2,13 +2,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'AgentBroker — The AI Agent That Hires AI Agents',
+  title: 'AgentGate — Pre-Validate & Hire AI Agents on OKX.AI',
   description:
-    'Describe your task, set a budget. AgentBroker searches the OKX.AI marketplace, picks the best agent, submits the task, monitors delivery, and releases payment — all autonomously.',
-  keywords: 'AI agent, OKX.AI, agent broker, crypto agents, agentic marketplace, Web3 automation',
+    'Pre-check your ASP before OKX listing, then hire the best agents on the marketplace. AgentGate validates x402 compliance, endpoint quality, and listing readiness.',
+  keywords: 'OKX.AI, ASP validation, agent pre-flight, agent broker, x402 checker, AI agent marketplace, Web3 automation',
   openGraph: {
-    title: 'AgentBroker — The AI Agent That Hires AI Agents',
-    description: 'The world\'s first autonomous agent orchestrator for OKX.AI. Tell it what you need. It handles everything else.',
+    title: 'AgentGate — Pre-Validate & Hire AI Agents on OKX.AI',
+    description: 'The quality gate for OKX.AI agents. Pre-validate your listing, then hire with confidence.',
     type: 'website',
   },
 };

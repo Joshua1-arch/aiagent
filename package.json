@@ -1,10 +1,12 @@
 {
-  "name": "okx-agents-heartbeat",
+  "name": "agentgate-daemon",
   "version": "1.0.0",
-  "description": "Background heartbeat script for OKX.AI agents",
+  "description": "AgentGate A2A daemon for Railway - keeps #4885 online 24/7",
   "main": "keep_agents_online.js",
   "scripts": {
     "start": "node keep_agents_online.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@okxweb3/a2a-node": "^0.1.9"
+  }
 }
